@@ -2,7 +2,7 @@ package com.example.android.posedetectionml
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.graphics.Bitmap
+import android.graphics.*
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -62,11 +62,11 @@ class MainActivity : AppCompatActivity() {
             Log.d("PICVANCHA",currentPhotoPath.toString())
         }
     }
+
     private fun dispatchTakePictureIntent() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Ensure that there's a camera activity to handle the intent
             takePictureIntent.resolveActivity(packageManager)?.also {
-                // Create the File where the photo should go
                 val photoFile: File? = try {
                     createImageFile()
                 } catch (ex: IOException) {
@@ -100,11 +100,22 @@ class MainActivity : AppCompatActivity() {
             val poseDetector = PoseDetection.getClient(options)
 
             val image = InputImage.fromFilePath(applicationContext, photoUri)
+
+            var bitmap = image.bitmapInternal
+            bitmap = bitmap?.copy(Bitmap.Config.ARGB_8888, true);
+            val canvas =Canvas(bitmap)
+            canvas.drawBitmap(bitmap, 0f, 0f, null)
+            val paint = Paint()
+            paint.color = Color.RED
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = 10f
+
+
             val taskpose = poseDetector.process(image).addOnSuccessListener {
                 Toast.makeText(this, "Task Successful", Toast.LENGTH_SHORT).show()
                 val pose = it
-                val allPoseLandmarks = pose.allPoseLandmarks
-                Log.d("POSEMAN",allPoseLandmarks.toString())
+//                val allPoseLandmarks = pose.allPoseLandmarks
+//                Log.d("POSEMAN",allPoseLandmarks.toString())
 
                 val leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)
                 val rightShoulder = pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)
@@ -140,6 +151,15 @@ class MainActivity : AppCompatActivity() {
                 val leftMouth = pose.getPoseLandmark(PoseLandmark.LEFT_MOUTH)
                 val rightMouth = pose.getPoseLandmark(PoseLandmark.RIGHT_MOUTH)
 
+
+                val allPoseLandmarks = pose.allPoseLandmarks
+                for (item in allPoseLandmarks) {
+                    val xPos = item.position.x
+                    val yPos = item.position.y
+                    canvas.drawCircle(xPos, yPos, 10f, paint)
+                }
+
+                binding.imageview.setImageBitmap(bitmap)
 
             }.addOnFailureListener {
                 Toast.makeText(this, "Task Failure", Toast.LENGTH_SHORT).show()
