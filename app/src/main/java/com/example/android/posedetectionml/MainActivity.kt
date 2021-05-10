@@ -9,10 +9,12 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Button
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.example.android.posedetectionml.databinding.ActivityMainBinding
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseDetection
@@ -28,10 +30,42 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
 
+    private lateinit var auth: FirebaseAuth
+
+    private lateinit var logoutBtn: Button
+    private lateinit var updatePass: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        auth = FirebaseAuth.getInstance()
+
+        if(auth.currentUser == null){
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        }else{
+            Toast.makeText(this, "Already logged in", Toast.LENGTH_LONG).show()
+        }
+
+        setContentView(R.layout.activity_main)
+
+        logoutBtn = findViewById(R.id.logout_btn)
+        updatePass = findViewById(R.id.update_pass_btn)
+
+        logoutBtn.setOnClickListener{
+            FirebaseAuth.getInstance().signOut()
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        updatePass.setOnClickListener{
+            val intent = Intent(this, UpdatePassword::class.java)
+            startActivity(intent)
+        }
 
 //        val options = PoseDetectorOptions.Builder()
 //            .setDetectorMode(PoseDetectorOptions.STREAM_MODE)
@@ -59,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         ).apply {
             // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
-            Log.d("PICVANCHA",currentPhotoPath.toString())
+            Log.d("Successfull",currentPhotoPath.toString())
         }
     }
 

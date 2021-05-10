@@ -2,4 +2,13 @@
     <string name="app_name">PoseDetectionML</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="update_pass">Update Password</string>
+    <string name="logout">Logout</string>
+    <string name="get_password_link">Reset Password</string>
+    <string name="email_hint">Email</string>
+    <string name="back">Back</string>
+    <string name="password_hint">Password</string>
+    <string name="login_btn">Login</string>
+    <string name="signup_btn">Signup</string>
+    <string name="new_password">Reset Password</string>
 </resources>
