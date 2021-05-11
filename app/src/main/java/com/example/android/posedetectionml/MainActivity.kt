@@ -10,9 +10,10 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.FileProvider
-import com.example.android.posedetectionml.databinding.ActivityMainBinding
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.mlkit.vision.common.InputImage
@@ -28,17 +29,20 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var binding: ActivityMainBinding
+
 
     private lateinit var auth: FirebaseAuth
 
-    private lateinit var logoutBtn: Button
-    private lateinit var updatePass: Button
+    private lateinit var takepic: ImageButton
+    private lateinit var imageview:ImageView
+
+    private lateinit var logoutBtn: ImageButton
+    private lateinit var updatePass: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_main)
+
 
         auth = FirebaseAuth.getInstance()
 
@@ -50,10 +54,12 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Already logged in", Toast.LENGTH_LONG).show()
         }
 
-        setContentView(R.layout.activity_main)
+
 
         logoutBtn = findViewById(R.id.logout_btn)
         updatePass = findViewById(R.id.update_pass_btn)
+        imageview = findViewById(R.id.imageview)
+        takepic = findViewById(R.id.takepic)
 
         logoutBtn.setOnClickListener{
             FirebaseAuth.getInstance().signOut()
@@ -70,7 +76,7 @@ class MainActivity : AppCompatActivity() {
 //        val options = PoseDetectorOptions.Builder()
 //            .setDetectorMode(PoseDetectorOptions.STREAM_MODE)
 //            .build()
-        binding.takepic.setOnClickListener {
+        takepic.setOnClickListener {
             dispatchTakePictureIntent()
         }
 
@@ -125,7 +131,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            binding.imageview.setImageURI(photoUri)
+            imageview.setImageURI(photoUri)
 
             val options = AccuratePoseDetectorOptions.Builder()
                 .setDetectorMode(AccuratePoseDetectorOptions.SINGLE_IMAGE_MODE)
@@ -193,14 +199,11 @@ class MainActivity : AppCompatActivity() {
                     canvas.drawCircle(xPos, yPos, 10f, paint)
                 }
 
-                binding.imageview.setImageBitmap(bitmap)
+                imageview.setImageBitmap(bitmap)
 
             }.addOnFailureListener {
                 Toast.makeText(this, "Task Failure", Toast.LENGTH_SHORT).show()
             }
-
-
-
 
         }
     }
